@@ -5,7 +5,7 @@ import Footer from "./components/footer";
 import GreenDiv from "./components/green-div";
 import Lastdiv from "./components/lastdiv/page";
 import Navbar from "./components/navbar";
-import ProductCard from "./components/products-card/page";
+import ProductsCard from "./components/products-card/page";
 import Whitediv from "./components/white-dic/page";
 
 export default function Home(){
@@ -15,7 +15,7 @@ export default function Home(){
       <Navbar/>
       <Carausel/>
       <Editors/>
-      <ProductCard/>
+      <ProductsCard/>
       <GreenDiv/>
       <Whitediv/>
       <Lastdiv/>
