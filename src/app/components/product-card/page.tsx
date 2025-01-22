@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
+import type { ReactNode } from 'react';
 
 interface ProductCardProps {
   imageSrc: string;
@@ -17,7 +18,8 @@ const ProductCard = ({
   category,
   originalPrice,
   discountedPrice,
-}: ProductCardProps) => {
+}: 
+ProductCardProps) => {
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden relative">
       <div className="w-full h-72 relative">
