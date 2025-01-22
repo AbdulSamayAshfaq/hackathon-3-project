@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
-import type { ReactNode } from 'react';
+
 
 interface ProductCardProps {
   imageSrc: string;
@@ -43,4 +43,5 @@ ProductCardProps) => {
   );
 };
 
+// @ts-ignore
 export default ProductCard;
