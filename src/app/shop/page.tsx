@@ -3,182 +3,176 @@
 import Image from "next/image";
 import Navbar from "../components/navbar";
 import GreenHeader from "../components/green-header";
-import arrow from "@/images/Vector (13).png";
-import cat1 from "@/images/card-item.png";
-import cat2 from "@/images/card-item (1).png";
-import cat3 from "@/images/card-item (2).png";
-import cat4 from "@/images/card-item (3).png";
-import cat5 from "@/images/card-item (4).png";
-import drop from "@/images/Vector (14).png";
-import clients from "@/images/desktop-clients-1.png";
-import CardText from "../components/cards-text/page";
-import Footer from "../components/footer";
+
 import { client } from "@/sanity/lib/client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { urlFor } from "@/sanity/lib/image";
-
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Footer from "../components/footer";
 
 interface Product {
   _id: string;
   product: string;
-  category: string;
   price: number;
   inventory: number;
-  colors: string[];
-  status: string;
   imageUrl: string;
-  description: string;
+}
+
+interface CartItem {
+  _id: string;
+  product: string;
+  price: number;
+  quantity: number;
 }
 
 export default function Shop() {
-  const [product, setProduct] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
+
+  // Toast Notifications
+  const notify = (message: string, type: "success" | "info", id: string) => {
+    toast.dismiss(id); // Dismiss previous toast with the same ID
+    toast[type](message, { toastId: id });
+  };
 
   useEffect(() => {
     async function getData() {
-      const fetchData = await client.fetch(`
-        *[_type == "product"] [0..19] {
+      const data = await client.fetch(`
+        *[_type == "product"][0..19]{
           _id,
           product,
-          description,
           "imageUrl": productImage.asset->url,
           price,
-          tags,
-          discountPercentage,
-          isNew
+          inventory
         }
       `);
-      setProduct(fetchData);
-      console.log(fetchData);
+      setProducts(data);
     }
-
     getData();
   }, []);
+
+  const handleAddToCart = (productId: string) => {
+    const product = products.find((item) => item._id === productId);
+
+    if (product) {
+      setCart((prevCart) => {
+        const existingItem = prevCart.find((item) => item._id === productId);
+        if (existingItem) {
+          return prevCart.map((item) =>
+            item._id === productId
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          );
+        }
+        return [...prevCart, { ...product, quantity: 1 }];
+      });
+
+      notify(`${product.product} added to cart! ✅`, "success", productId);
+    }
+  };
+
+  const handleRemoveFromCart = (productId: string) => {
+    setCart((prevCart) => prevCart.filter((item) => item._id !== productId));
+    notify("Product removed from cart.", "info", `remove-${productId}`);
+  };
+
+  const handleConfirmOrder = () => {
+    setCart([]);
+    notify("Your order has been confirmed! 🎉", "success", "confirm-order");
+  };
 
   return (
     <div>
       <GreenHeader />
       <Navbar />
-      {/* Shop Section */}
-      <div className="w-full h-[92px] flex flex-col items-center mt-[10px]">
-        <div className="w-full max-w-screen-xl flex gap-4 items-center py-[40px]">
-          {/* Shop Title */}
-          <div className="w-full h-[32px] flex justify-center items-center mb-[8px]">
-            <h2 className="font-Montserrat font-bold text-[24px] leading-[32px] text-[#252B42]">
-              Shop
-            </h2>
-          </div>
-          {/* Breadcrumb */}
-          <div className="w-full h-[44px] flex justify-center items-center gap-[5px]">
-            <div className="flex items-center gap-[15px]">
-              <div className="font-Montserrat font-bold text-[14px] leading-[24px] text-[#252B42]">
-                Home
-              </div>
-              <Image src={arrow} alt="arrow" width={8.26} height={6} />
-              <h6 className="font-Montserrat font-bold text-[14px] leading-[24px] text-[#BDBDBD]">
-                Shop
-              </h6>
-            </div>
-          </div>
+
+      {/* Shop Header */}
+      <div className="bg-gray-100 py-10">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl font-bold text-gray-800">Shop</h1>
+          <p className="text-gray-600 mt-2">Find the best products for your needs</p>
         </div>
       </div>
-      {/* Category Section */}
-      <div className="w-full bg-[#FAFAFA] py-8">
-        <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 ml-[90px] lg:ml-[70px]">
-          <Image src={cat1} alt="1" className="w-[60%] md:w-full lg:w-full" />
-          <Image src={cat2} alt="2" className="w-[60%] md:w-full lg:w-full" />
-          <Image src={cat3} alt="3" className="w-[60%] md:w-full lg:w-full" />
-          <Image src={cat4} alt="4" className="w-[60%] md:w-full lg:w-full" />
-          <Image src={cat5} alt="5" className="w-[60%] md:w-full lg:w-full" />
-        </div>
-      </div>
-      {/* Popularity Section */}
-      <div className="w-full h-[98px] flex justify-center items-center mt-12">
-        <div className="w-full max-w-screen-xl flex justify-between items-center py-[24px] px-4">
-          <div className="font-montserrat font-bold text-[14px] leading-[24px] text-[#737373]">
-            Showing all 12 results
-          </div>
-          <div className="flex gap-4 items-center">
-            <button className="w-[141px] h-[50px] border border-[#DDDDDD] flex items-center justify-center relative">
-              <p className="font-Montserrat text-[14px] leading-[28px] text-[#737373]">
-                Popularity
-              </p>
-              <Image
-                src={drop}
-                alt="drop"
-                className="absolute top-[10px] left-[10px]"
-              />
-            </button>
-            <button className="w-[94px] h-[50px] flex justify-center items-center bg-[#23A6F0]">
-              <h6 className="font-Montserrat font-bold text-[14px] leading-[24px] text-white">
-                Filter
-              </h6>
-            </button>
-          </div>
-        </div>
-      </div>
-      {/* Clients Section */}
-      <div className="relative mt-12">
-        <Image src={clients} alt="clients" className="w-full" />
-      </div>
-      {/* Product Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-8 px-8 mt-7">
-        {product.map((product: Product) => (
-          <div
-            key={product._id}
-            className="border rounded-3xl shadow-lg p-5 hover:shadow-black transition duration-200"
-          >
-            <div className="flex flex-col">
-              {/* Link to Product Detail Page */}
-              <Link href={`/product/${product._id}`}
-              >  
+
+      {/* Product List */}
+      <div className="container mx-auto px-4 py-8">
+        <h2 className="text-2xl font-bold mb-6">Our Products</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+          {products.map((product) => (
+            <div
+              key={product._id}
+              className="border rounded-lg p-4 shadow-md hover:shadow-lg transition"
+            >
+              <Link href={`/product/${product._id}`}>
                 <Image
+                  src={urlFor(product.imageUrl).url()}
+                  alt={product.product}
                   width={250}
                   height={200}
-                  src={urlFor(product.imageUrl).url()}
-                  alt={"Product Image"}
-                  className="object-cover rounded-md"
+                  className="rounded-md"
                 />
               </Link>
-              <div className="mt-4">
-                {/* Product Name */}
-                <h3 className="text-lg font-bold text-gray-800">
-                  {product.product}
-                </h3>
-                {/* Product Price */}
-                <p className="text-md font-semibold text-blue-600 mt-2">
-                  ${product.price}
-                </p>
-
-                <CardText />
-              </div>
+              <h3 className="text-lg font-semibold mt-2">{product.product}</h3>
+              <p className="text-blue-600 font-bold">${product.price}</p>
+              <button
+                onClick={() => handleAddToCart(product._id)}
+                className="mt-3 w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              >
+                Add to Cart
+              </button>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Pagination */}
-      <div className="w-full max-w-[313px] mx-auto mt-[100px] border border-gray-300 rounded-lg shadow-md">
-        <div className="flex items-center justify-center space-x-2">
-          <div className="bg-gray-100 text-gray-600 font-extrabold py-2 px-4 border border-gray-300 rounded-l-md shadow-md cursor-pointer">
-            First
-          </div>
-          <div className="bg-white text-blue-600 py-2 px-3 border border-gray-300 shadow-md cursor-pointer">
-            1
-          </div>
-          <div className="bg-blue-600 text-white py-2 px-3 border border-gray-300 shadow-md cursor-pointer">
-            2
-          </div>
-          <div className="bg-white text-blue-600 py-2 px-3 border border-gray-300 shadow-md cursor-pointer">
-            3
-          </div>
-          <div className="bg-white text-blue-600 py-2 px-4 border border-gray-300 rounded-r-md shadow-md cursor-pointer">
-            Next
-          </div>
+          ))}
         </div>
       </div>
-      <Footer />
+
+      {/* Cart Section */}
+      <div className="bg-gray-100 py-8">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold mb-4">Your Cart</h2>
+          {cart.length === 0 ? (
+            <p>Your cart is empty.</p>
+          ) : (
+            <>
+              <ul className="space-y-4">
+                {cart.map((item) => (
+                  <li
+                    key={item._id}
+                    className="flex justify-between items-center p-4 border rounded-lg bg-white"
+                  >
+                    <div>
+                      <h4 className="text-lg font-semibold">{item.product}</h4>
+                      <p className="text-sm text-gray-600">
+                        ${item.price} x {item.quantity} = $
+                        {(item.price * item.quantity).toFixed(2)}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveFromCart(item._id)}
+                      className="text-red-600 hover:underline"
+                    >
+                      Remove
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <button
+                onClick={handleConfirmOrder}
+                className="mt-6 w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              >
+                Confirm Order
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Footer */}
+      
+      <Footer/>
+
+      <ToastContainer />
     </div>
   );
 }

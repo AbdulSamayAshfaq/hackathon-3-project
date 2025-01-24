@@ -6,33 +6,42 @@ import colours from "@/images/product-colors.png";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
-
 export default function CardText() {
-  const notify = () => toast("Item added to cart! ✅");
+  const notify = () => toast.success("Item added to cart! ✅");
 
   return (
-    
-
+    <div className="max-w-xs mx-auto  p-5 space-y-4">
       
-        
-      <div className="space-y-3">
-      <div className="w-[70px] h-[15px] flex justify-center">
-        <Image src={colours} alt="Product colours" />
-
+      {/* Product Colors */}
+      <div className="flex justify-center">
+        <Image
+          src={colours}
+          alt="Available colors"
+          className="rounded-full"
+          width={100}
+          height={20}
+        />
       </div>
-      
+
+      {/* Add to Cart Button */}
       <button
         onClick={notify}
-        className="py-[10px]  px-[20px] w-full font-Montserrat font-bold text-[14px] text-white bg-[#23A6F0] rounded-md hover:bg-[#1d91d0] focus:outline-none focus:ring-2 focus:ring-[#23A6F0] focus:ring-offset-2 transition-all"
-        >
+        className="w-full py-3 text-white bg-blue-600 hover:bg-blue-700 text-sm font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 transition-all"
+      >
         Add to Cart
       </button>
-      <ToastContainer />
-    
+
+      {/* Toast Notification */}
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="light"
+      />
     </div>
   );
 }
-
-  
 

@@ -1,16 +1,21 @@
 "use client";
 import Image from "next/image";
-import Link from "next/link"; 
+import Link from "next/link";
+import { useState } from "react";
 import user from "@/images/Vector (12).png";
 import search from "@/images/icn settings icn-xs (6).png";
 import cart from "@/images/icn settings icn-xs (7).png";
 import mail from "@/images/icn settings icn-xs (8).png";
-import { useState } from "react";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
   return (
     <nav className="w-full bg-white shadow-md">
@@ -28,10 +33,23 @@ export default function Navbar() {
           <li><Link href="/pages">Pages</Link></li>
         </ul>
 
+        {/* Search Bar */}
+        <div className="relative flex items-center">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="Search products..."
+            className="border px-4 py-2 rounded-md text-sm"
+          />
+          <button className="absolute right-3">
+            <Image src={search} alt="search" width={16} height={16} />
+          </button>
+        </div>
+
         {/* Icons Section */}
         <div className="flex space-x-4 items-center">
           <Image src={user} alt="user" width={16} height={16} />
-          <Image src={search} alt="search" width={16} height={16} />
           <Image src={cart} alt="cart" width={16} height={16} />
           <Image src={mail} alt="mail" width={16} height={16} />
         </div>
@@ -75,10 +93,11 @@ export default function Navbar() {
             <li><Link href="/pages">Pages</Link></li>
           </ul>
           <button onClick={toggleMenu} className="text-sm text-black font-Montserrat">
-           - Close Menu -
+            - Close Menu -
           </button>
         </div>
       )}
     </nav>
   );
 }
+
