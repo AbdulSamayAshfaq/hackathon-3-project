@@ -5,9 +5,8 @@ import Image from "next/image";
 import colours from "@/images/product-colors.png";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { product } from "@/sanity/schemaTypes/product";
-import { Link } from "sanity/router";
-import { PHASE_PRODUCTION_SERVER } from "next/dist/shared/lib/constants";
+
+
 
 export default function CardText() {
   const notify = () => toast("Item added to cart! ✅");

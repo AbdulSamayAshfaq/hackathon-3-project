@@ -17,8 +17,8 @@ import { client } from "@/sanity/lib/client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { urlFor } from "@/sanity/lib/image";
-import product from "../product/[id]/page";
-import ProductCard from "../components/addtocard/page";
+
+
 
 interface Product {
   _id: string;

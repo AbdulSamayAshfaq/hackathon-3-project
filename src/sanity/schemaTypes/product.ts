@@ -1,4 +1,4 @@
-import { sources } from "next/dist/compiled/webpack/webpack"
+
 import { defineType } from "sanity"
 
 export const product = defineType({
