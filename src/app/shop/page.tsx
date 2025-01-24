@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Image from "next/image";
 import Navbar from "../components/navbar";
@@ -15,10 +15,14 @@ import CardText from "../components/cards-text/page";
 import Footer from "../components/footer";
 import { client } from "@/sanity/lib/client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import { urlFor } from "@/sanity/lib/image";
+import product from "../product/[id]/page";
+import ProductCard from "../components/addtocard/page";
 
 interface Product {
   _id: string;
-  productName: string;
+  product: string;
   category: string;
   price: number;
   inventory: number;
@@ -27,7 +31,6 @@ interface Product {
   imageUrl: string;
   description: string;
 }
-import { urlFor } from "@/sanity/lib/image";
 
 export default function Shop() {
   const [product, setProduct] = useState<Product[]>([]);
@@ -35,7 +38,7 @@ export default function Shop() {
   useEffect(() => {
     async function getData() {
       const fetchData = await client.fetch(`
-        *[_type == "product"] [0..15] {
+        *[_type == "product"] [0..19] {
           _id,
           product,
           description,
@@ -120,29 +123,41 @@ export default function Shop() {
         <Image src={clients} alt="clients" className="w-full" />
       </div>
       {/* Product Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4 mt-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-8 px-8 mt-7">
         {product.map((product: Product) => (
           <div
             key={product._id}
-            className="border rounded-lg shadow-md p-4 hover:shadow-lg transition duration-150"
+            className="border rounded-3xl shadow-lg p-5 hover:shadow-black transition duration-200"
           >
-            <div className="w-full flex flex-col">
-              <div className="flex-grow">
+            <div className="flex flex-col">
+              {/* Link to Product Detail Page */}
+              <Link href={`/product/${product._id}`}
+              >  
                 <Image
                   width={250}
-                  height={250}
+                  height={200}
                   src={urlFor(product.imageUrl).url()}
-                  alt={"img"}
-                  className="w-full h-full object-cover rounded-md"
+                  alt={"Product Image"}
+                  className="object-cover rounded-md"
                 />
-              </div>
+              </Link>
               <div className="mt-4">
-               <CardText/>
+                {/* Product Name */}
+                <h3 className="text-lg font-bold text-gray-800">
+                  {product.product}
+                </h3>
+                {/* Product Price */}
+                <p className="text-md font-semibold text-blue-600 mt-2">
+                  ${product.price}
+                </p>
+
+                <CardText />
               </div>
             </div>
           </div>
         ))}
       </div>
+
       {/* Pagination */}
       <div className="w-full max-w-[313px] mx-auto mt-[100px] border border-gray-300 rounded-lg shadow-md">
         <div className="flex items-center justify-center space-x-2">
